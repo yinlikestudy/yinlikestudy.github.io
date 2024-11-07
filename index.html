@@ -107,40 +107,15 @@
 <p>type: &lt;class ‘list’&gt;<br>[‘test.py’, ‘–user’, ‘yinjinhui’, ‘–passwd’, ‘123456’]</p>
 </blockquote>
 <p>可以看到所有的参数都存放在了sys.argv列表里，但是列表存储的是参数的原始形态，假如我们需要获取用户名，就需要用索引访问列表，在参数比较多的时候非常的不方便。在用户改变输入顺序时也会产生错误，甚至发生列表访问越界。那么python标准库提供了一种更强的解析命令行参数的方法。<code>argparse模块</code></p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 现在有一个深度学习的训练脚本。需要用户指定训练的模型、训练的轮数、学习率、批量大小等参数。这些参数都是通过命令行传入的。例如：</span></span><br><span class="line"><span class="comment"># 这些参数有model,epoch,lr,batch_size</span></span><br><span class="line"><span class="keyword">import</span> argparse</span><br><span class="line"><span class="keyword">def</span> <span class="title function_">parsearg</span>():</span><br><span class="line">    <span class="comment">#首先创建一个ArgumentParser对象</span></span><br><span class="line">    parser = argparse.ArgumentParser(</span><br><span class="line">        prog=<span class="string">&quot;trashingsh&quot;</span>,<span class="comment">#程序名</span></span><br><span class="line">        description=<span class="string">&#x27;training&#x27;</span>,<span class="comment">#脚本的描述信息</span></span><br><span class="line">        epilog=<span class="string">&quot;copyright1.0&quot;</span>)<span class="comment">#结束语</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">#1重要方法add_argument() 指定程序所需的参数，包括位置参数，可选参数，参数的默认值，参数的类型，参数的取值范围等</span></span><br><span class="line">    <span class="comment">#这是一个位置参数，一般情况下必须传入，但是指定了默认值以后可以不传入,以-开头的参数是可选参数，其他是未知参数</span></span><br><span class="line">    parser.add_argument(<span class="string">&#x27;model&#x27;</span>,default=<span class="string">&#x27;resnet&#x27;</span>,<span class="built_in">type</span>=<span class="built_in">str</span>,<span class="built_in">help</span>=<span class="string">&#x27;model name [default: resnet]&#x27;</span>)</span><br><span class="line">    parser.add_argument(<span class="string">&#x27;--epoch&#x27;</span>,default=<span class="number">200</span>,<span class="built_in">type</span>=<span class="built_in">int</span>,choices=[<span class="number">100</span>,<span class="number">200</span>],<span class="built_in">help</span>=<span class="string">&#x27;number of training epoch&#x27;</span>)</span><br><span class="line">    parser.add_argument(<span class="string">&#x27;--lr&#x27;</span>,default=<span class="number">0.001</span>,<span class="built_in">type</span>=<span class="built_in">float</span>,<span class="built_in">help</span>=<span class="string">&#x27;learning rate&#x27;</span>)</span><br><span class="line">    parser.add_argument(<span class="string">&#x27;--batch_size&#x27;</span>,<span class="built_in">type</span>=<span class="built_in">int</span>,required=<span class="literal">True</span>,<span class="built_in">help</span>=<span class="string">&#x27;traing batch_size must give&#x27;</span>)</span><br><span class="line">    parser.add_argument(<span class="string">&quot;--usenormal&quot;</span>,action=<span class="string">&#x27;store_true&#x27;</span>,default=<span class="literal">False</span>,<span class="built_in">help</span>=<span class="string">&#x27;use normal infm&#x27;</span>)</span><br><span class="line">    <span class="comment">#重要方法parse_args()，返回解析后的namespace对象</span></span><br><span class="line">    args = parser.parse_args()</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    <span class="built_in">print</span>(<span class="string">&quot;atart traing...&quot;</span>)</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">f&#x27;model=<span class="subst">&#123;args.model&#125;</span>&#x27;</span>)</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">f&#x27;epoch=<span class="subst">&#123;args.epoch&#125;</span>&#x27;</span>)</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">f&#x27;lr=<span class="subst">&#123;args.lr&#125;</span>&#x27;</span>)</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">f&#x27;batch_size=<span class="subst">&#123;args.batch_size&#125;</span>&#x27;</span>)</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">f&#x27;usenormal=<span class="subst">&#123;args.usenormal&#125;</span>&#x27;</span>)</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">&#x27;__main__&#x27;</span>:</span><br><span class="line">    parsearg()</span><br></pre></td></tr></table></figure>
-
-<p>case1:正常输入了参数运行程序</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">python test.py resnet --epoch 100 --lr 0.01 --batch_size 12 --usenormal</span><br></pre></td></tr></table></figure>
-
-
-
-<blockquote>
-<p>atart traing…<br>model&#x3D;resnet<br>epoch&#x3D;100<br>lr&#x3D;0.01<br>batch_size&#x3D;12<br>usenormal&#x3D;True</p>
-</blockquote>
-<p>case2:只查看参数的帮助信息</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">python test.py -h         </span><br></pre></td></tr></table></figure>
-
-<p>​       </p>
-<blockquote>
-<p>usage: trashingsh [-h] [–epoch {100,200}] [–lr LR] –batch_size BATCH_SIZE [–usenormal] model</p>
-<p>training</p>
-<p>positional arguments:<br>model                 model name [default: resnet]</p>
-<p>optional arguments:<br>-h, –help            show this help message and exit<br>–epoch {100,200}     number of training epoch<br>–lr LR               learning rate<br>–batch_size BATCH_SIZE<br>                   traing batch_size must give<br>–usenormal           use normal infm</p>
-<p>copyright1.0</p>
-</blockquote>
-<p>case3:参数没有正确输入，argparse会提示错误信息</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">python test.py</span><br></pre></td></tr></table></figure>
-
-
-
-<blockquote>
-<p>usage: trashingsh [-h] [–epoch {100,200}] [–lr LR] –batch_size BATCH_SIZE [–usenormal] model<br>trashingsh: error: the following arguments are required: model, –batch_size</p>
-</blockquote>
-
+        
+          <p class="article-more-link">
+            <a href="/2024/11/07/argparse%E6%A8%A1%E5%9D%97%E8%AF%A6%E8%A7%A3%EF%BC%9A%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0/#more">Read More</a>
+          </p>
+        
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://example.com/2024/11/07/argparse%E6%A8%A1%E5%9D%97%E8%AF%A6%E8%A7%A3%EF%BC%9A%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0/" data-id="cm37d9uvm0000x0r083tl9qee" data-title="argparse模块详解：深度学习" class="article-share-link"><span class="fa fa-share">Share</span></a>
+      <a data-url="http://example.com/2024/11/07/argparse%E6%A8%A1%E5%9D%97%E8%AF%A6%E8%A7%A3%EF%BC%9A%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0/" data-id="cm37eoiug0000owr00ysyca71" data-title="argparse模块详解：深度学习" class="article-share-link"><span class="fa fa-share">Share</span></a>
       
       
       
@@ -188,13 +163,13 @@
 <p>More info: <a target="_blank" rel="noopener" href="https://hexo.io/docs/generating.html">Generating</a></p>
 <h3 id="Deploy-to-remote-sites"><a href="#Deploy-to-remote-sites" class="headerlink" title="Deploy to remote sites"></a>Deploy to remote sites</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo deploy</span><br></pre></td></tr></table></figure>
 
-<p><img src="/../imgs/image-20241107214829338.png" alt="image-20241107214829338"></p>
+<p><img src="/../imgs/image-20241107214829338.png"></p>
 <p>More info: <a target="_blank" rel="noopener" href="https://hexo.io/docs/one-command-deployment.html">Deployment</a></p>
 
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://example.com/2024/11/07/hello-world/" data-id="cm37d9uvr0001x0r0ablaeoby" data-title="Hello World" class="article-share-link"><span class="fa fa-share">Share</span></a>
+      <a data-url="http://example.com/2024/11/07/hello-world/" data-id="cm37eoiul0001owr02f0xez7p" data-title="Hello World" class="article-share-link"><span class="fa fa-share">Share</span></a>
       
       
       
